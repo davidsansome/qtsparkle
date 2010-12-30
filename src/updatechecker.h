@@ -40,9 +40,10 @@ public:
   ~UpdateChecker();
 
   void SetNetworkAccessManager(QNetworkAccessManager* network);
-  void Check(const QUrl& appcast_url);
+  void Check(const QUrl& appcast_url, bool override_user_skip);
 
 signals:
+  void CheckStarted();
   void UpdateAvailable(AppCastPtr appcast);
   void UpToDate();
   void CheckFailed(const QString& reason);

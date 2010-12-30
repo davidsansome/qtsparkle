@@ -77,7 +77,13 @@ void FollowRedirects::FinishedSlot() {
       target.setPath(path);
     }
 
-    d->reply_ = d->reply_->manager()->get(QNetworkRequest(target));
+    QNetworkRequest req(target);
+
+    // Copy the cache control attribute from the last request
+    req.setAttribute(QNetworkRequest::CacheLoadControlAttribute,
+        d->reply_->request().attribute(QNetworkRequest::CacheLoadControlAttribute));
+
+    d->reply_ = d->reply_->manager()->get(req);
     connect(d->reply_, SIGNAL(finished()), SLOT(FinishedSlot()));
     return;
   }

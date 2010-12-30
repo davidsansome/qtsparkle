@@ -25,24 +25,49 @@
 
 #include <QObject>
 #include <QScopedPointer>
-#include <QUrl>
 
 class QIcon;
 class QNetworkAccessManager;
+class QUrl;
 
 namespace qtsparkle {
 
+// The Updater is the main class in qtsparkle that you should use in your
+// application.  Updater loads its settings from QSettings in its constructor,
+// so it's important you set an organizationName, organizationDomain and
+// applicationName in QCoreApplication before calling it.
+// On the second run of this application it will create a dialog asking the
+// user for permission to check for updates.  After that, if the user gave
+// permission, it will check for updates automatically on startup.
+// Checking for updates and displaying dialogs is done after the application
+// returns to the event loop, not in the constructor.
 class Updater : public QObject {
   Q_OBJECT
 
 public:
+  // appcast_url is the URL that this class should use when checking for
+  // updates.  If parent is not NULL then any dialogs created by this class
+  // are parented to that widget.
   Updater(const QUrl& appcast_url, QWidget* parent);
   ~Updater();
 
+  // Sets a network access manager to use when making network requests.  If
+  // network is NULL, or if this function is not called, this class will create
+  // a new QNetworkManager.
+  // Must be called before the application returns to the event loop after this
+  // object is created.
+  // The Updater will NOT take ownership of the network manager, and you must
+  // ensure it is not deleted while the Updater is still in scope.
   void SetNetworkAccessManager(QNetworkAccessManager* network);
+
+  // Sets an icon to use in any dialogs that are created.  If no icon is set,
+  // the windowIcon() of the parent widget passed to the constructor is used
+  // instead.  The icon should be 64x64 pixels or greater.
   void SetIcon(const QIcon& icon);
 
 public slots:
+  // Checks for updates now.  You probably want to call this from a menu item
+  // in your application's main window.
   void CheckNow();
 
 protected:

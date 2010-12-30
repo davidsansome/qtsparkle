@@ -21,6 +21,7 @@
 */
 
 #include "appcast.h"
+#include "common.h"
 #include "compareversions.h"
 #include "followredirects.h"
 #include "updatechecker.h"
@@ -29,6 +30,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QSettings>
 #include <QUrl>
 #include <QtDebug>
 
@@ -37,12 +39,16 @@ namespace qtsparkle {
 struct UpdateChecker::Private {
   Private()
     : network_(NULL),
-      busy_(false)
+      busy_(false),
+      override_user_skip_(false)
   {
   }
 
+  QNetworkRequest MakeRequest(const QUrl& url);
+
   QNetworkAccessManager* network_;
   bool busy_;
+  bool override_user_skip_;
 };
 
 UpdateChecker::UpdateChecker(QObject* parent)
@@ -58,26 +64,33 @@ void UpdateChecker::SetNetworkAccessManager(QNetworkAccessManager* network) {
   d->network_ = network;
 }
 
-void UpdateChecker::Check(const QUrl& appcast_url) {
-  qDebug() << __PRETTY_FUNCTION__;
+QNetworkRequest UpdateChecker::Private::MakeRequest(const QUrl& url) {
+  QNetworkRequest req(url);
+  req.setAttribute(QNetworkRequest::CacheLoadControlAttribute,
+                   QNetworkRequest::AlwaysNetwork);
 
+  return req;
+}
+
+void UpdateChecker::Check(const QUrl& appcast_url, bool override_user_skip) {
   if (d->busy_)
     return;
+
+  emit CheckStarted();
 
   if (!d->network_)
     d->network_ = new QNetworkAccessManager(this);
 
   d->busy_ = true;
+  d->override_user_skip_ = override_user_skip;
 
   FollowRedirects* reply = new FollowRedirects(
-        d->network_->get(QNetworkRequest(appcast_url)));
+        d->network_->get(d->MakeRequest(appcast_url)));
   connect(reply, SIGNAL(Finished()), SLOT(Finished()));
   connect(reply, SIGNAL(RedirectLimitReached()), SLOT(RedirectLimitReached()));
 }
 
 void UpdateChecker::Finished() {
-  qDebug() << __PRETTY_FUNCTION__;
-
   FollowRedirects* reply = qobject_cast<FollowRedirects*>(sender());
   if (!reply)
     return;
@@ -92,9 +105,20 @@ void UpdateChecker::Finished() {
     return;
   }
 
+  // Is the application version greater than or equal to the latest version?
   if (!CompareVersions(qApp->applicationVersion(), appcast->version())) {
     emit UpToDate();
     return;
+  }
+
+  // Has the user asked to skip this version?
+  if (!d->override_user_skip_) {
+    QSettings s;
+    s.beginGroup(kSettingsGroup);
+    if (s.value("skipped_version").toString() == appcast->version()) {
+      emit UpToDate();
+      return;
+    }
   }
 
   emit UpdateAvailable(appcast);

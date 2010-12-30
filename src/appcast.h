@@ -23,8 +23,9 @@
 #ifndef QTSPAKRLE_APPCAST_H
 #define QTSPAKRLE_APPCAST_H
 
+#include "appcast_fwd.h"
+
 #include <QScopedPointer>
-#include <QSharedPointer>
 
 class QIODevice;
 
@@ -49,7 +50,6 @@ private:
   struct Private;
   QScopedPointer<Private> d;
 };
-typedef QSharedPointer<AppCast> AppCastPtr;
 
 } // namespace qtsparkle
 

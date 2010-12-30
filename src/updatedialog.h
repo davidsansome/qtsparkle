@@ -48,6 +48,8 @@ public slots:
 
 private slots:
   void ReleaseNotesReady();
+  void Install();
+  void Skip();
 
 private:
   struct Private;

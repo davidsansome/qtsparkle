@@ -20,10 +20,14 @@
    THE SOFTWARE.
 */
 
+#include "appcast.h"
+#include "common.h"
 #include "followredirects.h"
 #include "updatedialog.h"
 #include "ui_updatedialog.h"
 
+#include <QDesktopServices>
+#include <QSettings>
 #include <QtDebug>
 
 namespace qtsparkle {
@@ -37,6 +41,7 @@ struct UpdateDialog::Private {
   QScopedPointer<Ui_UpdateDialog> ui_;
 
   QNetworkAccessManager* network_;
+  AppCastPtr appcast_;
 
   static const int kIconSize;
 };
@@ -54,6 +59,10 @@ UpdateDialog::UpdateDialog(QWidget *parent)
   d->ui_->release_notes_label->setText(
       "<b>" + d->ui_->release_notes_label->text() + "</b>");
   d->ui_->icon->hide();
+
+  connect(d->ui_->install, SIGNAL(clicked()), SLOT(Install()));
+  connect(d->ui_->skip, SIGNAL(clicked()), SLOT(Skip()));
+  connect(d->ui_->later, SIGNAL(clicked()), SLOT(close()));
 }
 
 UpdateDialog::~UpdateDialog() {
@@ -73,6 +82,8 @@ void UpdateDialog::SetIcon(const QIcon& icon) {
 }
 
 void UpdateDialog::ShowUpdate(AppCastPtr appcast) {
+  d->appcast_ = appcast;
+
   d->ui_->title->setText("<h3>" +
       tr("A new version of %1 is available").arg(qApp->applicationName()) + "</h3>");
   d->ui_->summary->setText(
@@ -90,8 +101,6 @@ void UpdateDialog::ShowUpdate(AppCastPtr appcast) {
 }
 
 void UpdateDialog::ReleaseNotesReady() {
-  qDebug() << __PRETTY_FUNCTION__;
-
   FollowRedirects* reply = qobject_cast<FollowRedirects*>(sender());
   if (!reply)
     return;
@@ -103,7 +112,24 @@ void UpdateDialog::ReleaseNotesReady() {
   } else {
     d->ui_->release_notes->setPlainText(reply->reply()->readAll());
   }
+}
 
+void UpdateDialog::Install() {
+  if (!d->appcast_)
+    return;
+
+  QDesktopServices::openUrl(d->appcast_->download_url());
+  close();
+}
+
+void UpdateDialog::Skip() {
+  if (!d->appcast_)
+    return;
+
+  QSettings s;
+  s.beginGroup(kSettingsGroup);
+  s.setValue("skipped_version", d->appcast_->version());
+  close();
 }
 
 } // namespace qtsparkle

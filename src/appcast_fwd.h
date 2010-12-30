@@ -20,38 +20,16 @@
    THE SOFTWARE.
 */
 
-#ifndef QTSPAKRLE_UICONTROLLER_H
-#define QTSPAKRLE_UICONTROLLER_H
+#ifndef QTSPAKRLE_APPCAST_FWD_H
+#define QTSPAKRLE_APPCAST_FWD_H
 
-#include "appcast.h"
-
-#include <QObject>
-#include <QScopedPointer>
-
-class QIcon;
+#include <QSharedPointer>
 
 namespace qtsparkle {
 
-class UiController : public QObject {
-  Q_OBJECT
-
-public:
-  UiController(bool quiet, QObject* parent, QWidget* parent_widget);
-  ~UiController();
-
-  void SetIcon(const QIcon& icon);
-
-public slots:
-  void CheckStarted();
-  void UpdateAvailable(AppCastPtr appcast);
-  void UpToDate();
-  void CheckFailed(const QString& reason);
-
-private:
-  struct Private;
-  QScopedPointer<Private> d;
-};
+class AppCast;
+typedef QSharedPointer<AppCast> AppCastPtr;
 
 } // namespace qtsparkle
 
-#endif // QTSPAKRLE_UICONTROLLER_H
+#endif // QTSPAKRLE_APPCAST_FWD_H

@@ -20,6 +20,7 @@
    THE SOFTWARE.
 */
 
+#include "common.h"
 #include "uicontroller.h"
 #include "updatechecker.h"
 #include "updater.h"
@@ -28,6 +29,7 @@
 #include <QIcon>
 #include <QMessageBox>
 #include <QSettings>
+#include <QUrl>
 #include <QtDebug>
 
 
@@ -61,11 +63,7 @@ struct Updater::Private {
 
   QEvent::Type ask_permission_event_;
   QEvent::Type auto_check_event_;
-
-  static const char* kSettingsGroup;
 };
-
-const char* Updater::Private::kSettingsGroup = "QtSparkle";
 
 
 Updater::Updater(const QUrl& appcast_url, QWidget* parent)
@@ -81,7 +79,7 @@ Updater::Updater(const QUrl& appcast_url, QWidget* parent)
 
   // Load settings
   QSettings s;
-  s.beginGroup(Private::kSettingsGroup);
+  s.beginGroup(kSettingsGroup);
   d->check_automatically_ = s.value("check_automatically", false).toBool();
   d->first_boot_ = s.value("first_boot", true).toBool();
   d->asked_permission_ = s.value("asked_permission", false).toBool();
@@ -139,7 +137,7 @@ void Updater::Private::AskPermission() {
   check_automatically_ = (box.exec() == QDialog::Accepted);
 
   QSettings s;
-  s.beginGroup(Private::kSettingsGroup);
+  s.beginGroup(kSettingsGroup);
   s.setValue("asked_permission", true);
   s.setValue("check_automatically", check_automatically_);
 
@@ -159,11 +157,14 @@ void Updater::Private::CheckNow(bool quiet) {
   UpdateChecker* checker = new UpdateChecker(updater_);
   checker->SetNetworkAccessManager(network_);
 
+  connect(checker, SIGNAL(CheckStarted()), controller, SLOT(CheckStarted()));
   connect(checker, SIGNAL(CheckFailed(QString)), controller, SLOT(CheckFailed(QString)));
   connect(checker, SIGNAL(UpdateAvailable(AppCastPtr)), controller, SLOT(UpdateAvailable(AppCastPtr)));
   connect(checker, SIGNAL(UpToDate()), controller, SLOT(UpToDate()));
 
-  checker->Check(appcast_url_);
+  checker->Check(appcast_url_, !quiet);
+
+  // The UiController will delete itself when the check is finished.
 }
 
 } // namespace qtsparkle

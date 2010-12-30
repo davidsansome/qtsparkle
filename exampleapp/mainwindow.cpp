@@ -25,6 +25,7 @@
 #include <qtsparkle/Updater>
 
 #include <QPushButton>
+#include <QUrl>
 
 MainWindow::MainWindow()
   : updater_(new qtsparkle::Updater(QUrl("http://dev.latest.clementine-player.appspot.com/sparkle"), this))

@@ -11,6 +11,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(SOURCES
   appcast.cpp
+  common.cpp
   compareversions.cpp
   followredirects.cpp
   uicontroller.cpp

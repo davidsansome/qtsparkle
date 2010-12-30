@@ -20,10 +20,14 @@
    THE SOFTWARE.
 */
 
+#include "appcast.h"
 #include "uicontroller.h"
 #include "updatedialog.h"
 
+#include <QCoreApplication>
 #include <QIcon>
+#include <QMessageBox>
+#include <QProgressDialog>
 #include <QtDebug>
 
 namespace qtsparkle {
@@ -34,7 +38,8 @@ struct UiController::Private {
 
   QIcon icon_;
 
-  QScopedPointer<UpdateDialog> dialog_;
+  UpdateDialog* dialog_;
+  QProgressDialog* progress_dialog_;
 };
 
 UiController::UiController(bool quiet, QObject* parent, QWidget* parent_widget)
@@ -43,29 +48,71 @@ UiController::UiController(bool quiet, QObject* parent, QWidget* parent_widget)
 {
   d->quiet_ = quiet;
   d->parent_widget_ = parent_widget;
+  d->progress_dialog_ = NULL;
 }
 
 UiController::~UiController() {
+  delete d->progress_dialog_;
 }
 
 void UiController::SetIcon(const QIcon& icon) {
   d->icon_ = icon;
 }
 
-void UiController::UpdateAvailable(AppCastPtr appcast) {
-  qDebug() << __PRETTY_FUNCTION__;
+void UiController::CheckStarted() {
+  if (!d->quiet_) {
+    d->progress_dialog_ = new QProgressDialog(d->parent_widget_);
+    d->progress_dialog_->setAutoClose(false);
+    d->progress_dialog_->setAutoReset(false);
+    d->progress_dialog_->setRange(0, 0);
+    d->progress_dialog_->setCancelButton(NULL);
+    d->progress_dialog_->setWindowTitle(tr("Checking for updates"));
+    d->progress_dialog_->setLabelText(tr("Checking for updates to %1, please wait...")
+                                         .arg(qApp->applicationName()));
+    d->progress_dialog_->show();
+  }
+}
 
-  d->dialog_.reset(new UpdateDialog(d->parent_widget_));
+void UiController::UpdateAvailable(AppCastPtr appcast) {
+  if (d->progress_dialog_) {
+    d->progress_dialog_->hide();
+  }
+
+  d->dialog_ = new UpdateDialog(d->parent_widget_);
+  d->dialog_->setAttribute(Qt::WA_DeleteOnClose);
   d->dialog_->SetIcon(d->icon_);
   d->dialog_->ShowUpdate(appcast);
+
+  connect(d->dialog_, SIGNAL(destroyed()), SLOT(deleteLater()));
 }
 
 void UiController::UpToDate() {
-  qDebug() << "Up to date";
+  if (d->progress_dialog_) {
+    d->progress_dialog_->hide();
+  }
+
+  if (!d->quiet_) {
+    QMessageBox::information(d->parent_widget_, tr("No updates available"),
+                             tr("You already have the latest version of %1.")
+                                .arg(qApp->applicationName()));
+  }
+
+  deleteLater();
 }
 
 void UiController::CheckFailed(const QString& reason) {
-  qDebug() << "Check failed:" << reason;
+  qWarning() << "Update check failed:" << reason;
+
+  if (d->progress_dialog_) {
+    d->progress_dialog_->hide();
+  }
+
+  if (!d->quiet_) {
+    QMessageBox::warning(d->parent_widget_, tr("Update check failed"), reason,
+                         QMessageBox::Close, QMessageBox::NoButton);
+  }
+
+  deleteLater();
 }
 
 } // namespace qtsparkle
