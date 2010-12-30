@@ -37,7 +37,7 @@ add_public_header(updater.h Updater)
 qt4_wrap_cpp(MOC ${MOC_SOURCES})
 qt4_wrap_ui(UIC ${UI_SOURCES})
 
-add_library(qtsparkle SHARED
+add_library(qtsparkle
   ${SOURCES}
   ${MOC}
   ${UIC}
