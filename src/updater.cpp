@@ -28,6 +28,7 @@
 #include <QCoreApplication>
 #include <QIcon>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QSettings>
 #include <QUrl>
 #include <QtDebug>
@@ -131,10 +132,11 @@ void Updater::Private::AskPermission() {
     tr("Check for updates automatically?"),
     tr("Should %1 automatically check for updates?  You can always check for updates manually from the menu.")
         .arg(qApp->applicationName()), QMessageBox::NoButton, parent_widget_);
-  box.addButton(tr("Check automatically"), QMessageBox::YesRole);
+  QPushButton* yes = box.addButton(tr("Check automatically"), QMessageBox::YesRole);
   box.addButton(tr("Don't check"), QMessageBox::NoRole);
 
-  check_automatically_ = (box.exec() == QDialog::Accepted);
+  box.exec();
+  check_automatically_ = (box.clickedButton() == yes);
 
   QSettings s;
   s.beginGroup(kSettingsGroup);
