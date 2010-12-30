@@ -5,6 +5,8 @@ function(add_public_header oldname newname)
     "${CMAKE_CURRENT_SOURCE_DIR}/${oldname}"
     "${CMAKE_BINARY_DIR}/include/qtsparkle/${newname}"
     COPY_ONLY)
+  install(FILES "${CMAKE_BINARY_DIR}/include/qtsparkle/${newname}"
+          DESTINATION include/qtsparkle)
 endfunction(add_public_header)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -45,5 +47,10 @@ add_library(qtsparkle
 
 target_link_libraries(qtsparkle
   ${QT_LIBRARIES}
+)
+
+install(TARGETS qtsparkle
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION bin
 )
 
