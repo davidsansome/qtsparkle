@@ -29,6 +29,7 @@
 #include <QScopedPointer>
 
 class QIcon;
+class QNetworkAccessManager;
 
 namespace qtsparkle {
 
@@ -39,7 +40,9 @@ public:
   UiController(bool quiet, QObject* parent, QWidget* parent_widget);
   ~UiController();
 
+  void SetNetworkAccessManager(QNetworkAccessManager* network);
   void SetIcon(const QIcon& icon);
+  void SetVersion(const QString& version);
 
 public slots:
   void CheckStarted();

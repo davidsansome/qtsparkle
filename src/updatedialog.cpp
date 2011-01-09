@@ -41,6 +41,7 @@ struct UpdateDialog::Private {
   QScopedPointer<Ui_UpdateDialog> ui_;
 
   QNetworkAccessManager* network_;
+  QString version_;
   AppCastPtr appcast_;
 
   static const int kIconSize;
@@ -81,6 +82,10 @@ void UpdateDialog::SetIcon(const QIcon& icon) {
   }
 }
 
+void UpdateDialog::SetVersion(const QString& version) {
+  d->version_ = version;
+}
+
 void UpdateDialog::ShowUpdate(AppCastPtr appcast) {
   d->appcast_ = appcast;
 
@@ -88,7 +93,7 @@ void UpdateDialog::ShowUpdate(AppCastPtr appcast) {
       tr("A new version of %1 is available").arg(qApp->applicationName()) + "</h3>");
   d->ui_->summary->setText(
       tr("%1 %2 is now available - you have %3.  Would you like to download it now?")
-      .arg(qApp->applicationName(), appcast->version(), qApp->applicationVersion()));
+      .arg(qApp->applicationName(), appcast->version(), d->version_));
 
   show();
 

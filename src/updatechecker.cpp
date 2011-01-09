@@ -47,6 +47,8 @@ struct UpdateChecker::Private {
   QNetworkRequest MakeRequest(const QUrl& url);
 
   QNetworkAccessManager* network_;
+  QString version_;
+
   bool busy_;
   bool override_user_skip_;
 };
@@ -62,6 +64,10 @@ UpdateChecker::~UpdateChecker() {
 
 void UpdateChecker::SetNetworkAccessManager(QNetworkAccessManager* network) {
   d->network_ = network;
+}
+
+void UpdateChecker::SetVersion(const QString& version) {
+  d->version_ = version;
 }
 
 QNetworkRequest UpdateChecker::Private::MakeRequest(const QUrl& url) {
@@ -106,7 +112,7 @@ void UpdateChecker::Finished() {
   }
 
   // Is the application version greater than or equal to the latest version?
-  if (!CompareVersions(qApp->applicationVersion(), appcast->version())) {
+  if (!CompareVersions(d->version_, appcast->version())) {
     emit UpToDate();
     return;
   }

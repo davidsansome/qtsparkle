@@ -56,6 +56,7 @@ struct Updater::Private {
 
   QNetworkAccessManager* network_;
   QIcon icon_;
+  QString version_;
 
   QUrl appcast_url_;
   bool check_automatically_;
@@ -73,6 +74,7 @@ Updater::Updater(const QUrl& appcast_url, QWidget* parent)
 {
   d->ask_permission_event_ = QEvent::Type(QEvent::registerEventType());
   d->auto_check_event_ = QEvent::Type(QEvent::registerEventType());
+  d->version_ = QCoreApplication::applicationVersion();
 
   if (parent) {
     SetIcon(parent->windowIcon());
@@ -111,6 +113,10 @@ void Updater::SetIcon(const QIcon& icon) {
 
 void Updater::SetNetworkAccessManager(QNetworkAccessManager* network) {
   d->network_ = network;
+}
+
+void Updater::SetVersion(const QString& version) {
+  d->version_ = version;
 }
 
 bool Updater::event(QEvent* e) {
@@ -154,10 +160,13 @@ void Updater::CheckNow() {
 
 void Updater::Private::CheckNow(bool quiet) {
   UiController* controller = new UiController(quiet, updater_, parent_widget_);
+  controller->SetNetworkAccessManager(network_);
   controller->SetIcon(icon_);
+  controller->SetVersion(version_);
 
   UpdateChecker* checker = new UpdateChecker(updater_);
   checker->SetNetworkAccessManager(network_);
+  checker->SetVersion(version_);
 
   connect(checker, SIGNAL(CheckStarted()), controller, SLOT(CheckStarted()));
   connect(checker, SIGNAL(CheckFailed(QString)), controller, SLOT(CheckFailed(QString)));

@@ -36,7 +36,9 @@ struct UiController::Private {
   bool quiet_;
   QWidget* parent_widget_;
 
+  QNetworkAccessManager* network_;
   QIcon icon_;
+  QString version_;
 
   UpdateDialog* dialog_;
   QProgressDialog* progress_dialog_;
@@ -55,8 +57,16 @@ UiController::~UiController() {
   delete d->progress_dialog_;
 }
 
+void UiController::SetNetworkAccessManager(QNetworkAccessManager* network) {
+  d->network_ = network;
+}
+
 void UiController::SetIcon(const QIcon& icon) {
   d->icon_ = icon;
+}
+
+void UiController::SetVersion(const QString& version) {
+  d->version_ = version;
 }
 
 void UiController::CheckStarted() {
@@ -80,7 +90,9 @@ void UiController::UpdateAvailable(AppCastPtr appcast) {
 
   d->dialog_ = new UpdateDialog(d->parent_widget_);
   d->dialog_->setAttribute(Qt::WA_DeleteOnClose);
+  d->dialog_->SetNetworkAccessManager(d->network_);
   d->dialog_->SetIcon(d->icon_);
+  d->dialog_->SetVersion(d->version_);
   d->dialog_->ShowUpdate(appcast);
 
   connect(d->dialog_, SIGNAL(destroyed()), SLOT(deleteLater()));

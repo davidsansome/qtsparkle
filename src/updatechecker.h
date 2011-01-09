@@ -40,6 +40,7 @@ public:
   ~UpdateChecker();
 
   void SetNetworkAccessManager(QNetworkAccessManager* network);
+  void SetVersion(const QString& version);
   void Check(const QUrl& appcast_url, bool override_user_skip);
 
 signals:

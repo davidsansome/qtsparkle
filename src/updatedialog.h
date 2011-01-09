@@ -42,6 +42,7 @@ public:
 
   void SetNetworkAccessManager(QNetworkAccessManager* network);
   void SetIcon(const QIcon& icon);
+  void SetVersion(const QString& version);
 
 public slots:
   void ShowUpdate(AppCastPtr appcast);

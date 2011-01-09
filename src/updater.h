@@ -65,6 +65,10 @@ public:
   // instead.  The icon should be 64x64 pixels or greater.
   void SetIcon(const QIcon& icon);
 
+  // Sets the current version.  If this is not called then the default is to
+  // use QCoreApplication::applicationVersion()
+  void SetVersion(const QString& version);
+
 public slots:
   // Checks for updates now.  You probably want to call this from a menu item
   // in your application's main window.
