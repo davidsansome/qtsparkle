@@ -52,5 +52,6 @@ target_link_libraries(qtsparkle
 install(TARGETS qtsparkle
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION bin
+  RUNTIME DESTINATION bin
 )
 
