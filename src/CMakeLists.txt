@@ -39,10 +39,16 @@ add_public_header(updater.h Updater)
 qt4_wrap_cpp(MOC ${MOC_SOURCES})
 qt4_wrap_ui(UIC ${UI_SOURCES})
 
+add_translation_template(TRANSLATION_TEMPLATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/translations.ts
+  ${SOURCES} ${MOC_SOURCES} ${UI_SOURCES}
+)
+
 add_library(qtsparkle
   ${SOURCES}
   ${MOC}
   ${UIC}
+  ${TRANSLATION_TEMPLATE}
 )
 
 target_link_libraries(qtsparkle

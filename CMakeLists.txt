@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
+include(cmake/Translations.cmake)
+
 find_package(Qt4 4.6.0 REQUIRED QtCore QtGui QtNetwork QtXml)
 add_definitions(${QT_DEFINITIONS})
 include(${QT_USE_FILE})
