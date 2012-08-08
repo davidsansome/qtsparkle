@@ -18,3 +18,34 @@ macro(add_translation_template outfiles template)
 
   list(APPEND ${outfiles} ${template})
 endmacro(add_translation_template)
+
+
+macro(compile_translations outfiles ts_dir qrc_name qrc_dir)
+  set(qrc_filepath "${CMAKE_CURRENT_BINARY_DIR}/${qrc_name}")
+  file(WRITE ${qrc_filepath} "<RCC><qresource prefix=\"${qrc_dir}\">")
+
+  foreach(lang ${ARGN})
+    set(ts_filename "${lang}.ts")
+    set(ts_filepath "${CMAKE_CURRENT_SOURCE_DIR}/${ts_dir}/${ts_filename}")
+    set(qm_filename "${lang}.qm")
+    set(qm_filepath "${CMAKE_CURRENT_BINARY_DIR}/${qm_filename}")
+
+    # Convert the .ts to .qm
+    add_custom_command(
+      OUTPUT ${qm_filepath}
+      COMMAND ${QT_LRELEASE_EXECUTABLE} ARGS
+        -silent
+        ${ts_filepath}
+        -qm ${qm_filepath}
+      DEPENDS ${ts_filepath}
+    )
+
+    list(APPEND ${outfiles} ${qm_filepath})
+
+    # Add the .qm to the .qrc
+    file(APPEND ${qrc_filepath} "<file>${lang}.qm</file>")
+  endforeach()
+
+  file(APPEND ${qrc_filepath} "</qresource></RCC>")
+  qt4_add_resources(${outfiles} ${qrc_filepath})
+endmacro()

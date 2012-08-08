@@ -30,11 +30,34 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSettings>
+#include <QTranslator>
 #include <QUrl>
 #include <QtDebug>
 
 
+inline static void InitTranslationsResource() {
+  Q_INIT_RESOURCE(qtsparkle_translations);
+}
+
+
 namespace qtsparkle {
+
+void LoadTranslations(const QString& language) {
+  static bool sLoadedTranslations = false;
+  if (sLoadedTranslations) {
+    return;
+  }
+  sLoadedTranslations = true;
+  
+  InitTranslationsResource();
+  
+  QTranslator* t = new QTranslator;
+  if (t->load(language, ":/qtsparkle/translations/")) {
+    QCoreApplication::installTranslator(t);
+  } else {
+    delete t;
+  }
+}
 
 struct Updater::Private {
   Private(const QUrl& appcast_url, QWidget* parent_widget, Updater* updater)
@@ -72,6 +95,9 @@ Updater::Updater(const QUrl& appcast_url, QWidget* parent)
   : QObject(parent),
     d(new Private(appcast_url, parent, this))
 {
+  // Load translations if they haven't been loaded already.
+  LoadTranslations(QLocale::system().name());
+  
   d->ask_permission_event_ = QEvent::Type(QEvent::registerEventType());
   d->auto_check_event_ = QEvent::Type(QEvent::registerEventType());
   d->version_ = QCoreApplication::applicationVersion();

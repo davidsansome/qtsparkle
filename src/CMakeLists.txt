@@ -44,6 +44,46 @@ add_translation_template(TRANSLATION_TEMPLATE
   ${SOURCES} ${MOC_SOURCES} ${UI_SOURCES}
 )
 
+compile_translations(SOURCES
+  "../translations" "qtsparkle_translations.qrc" "/qtsparkle/translations"
+  "af"
+  "br"
+  "ca"
+  "cs"
+  "da_DK"
+  "da"
+  "de"
+  "el"
+  "es_AR"
+  "es"
+  "et"
+  "eu"
+  "fa"
+  "fi"
+  "fr"
+  "hr"
+  "hu"
+  "it"
+  "ja"
+  "ka"
+  "lt"
+  "nl"
+  "pl"
+  "pt_BR"
+  "pt"
+  "ro"
+  "ru"
+  "sk"
+  "sl"
+  "tr_TR"
+  "tr"
+  "uk"
+  "uz"
+  "vi"
+  "zh_CN"
+  "zh_TW"
+)
+
 add_library(qtsparkle
   ${SOURCES}
   ${MOC}

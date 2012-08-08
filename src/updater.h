@@ -32,6 +32,14 @@ class QUrl;
 
 namespace qtsparkle {
 
+// Loads qtsparkle's translations from the .ts files compiled into the library,
+// and installs them using QCoreApplication::installTranslator.  Use this
+// function if you want to use a non-default language for qtsparkle.  If you
+// do not call this function, it will be called with the default language
+// (QLocale::system().name()) the first time qtsparkle::Updater is created.
+void LoadTranslations(const QString& language);
+
+
 // The Updater is the main class in qtsparkle that you should use in your
 // application.  Updater loads its settings from QSettings in its constructor,
 // so it's important you set an organizationName, organizationDomain and
