@@ -27,6 +27,7 @@
 #include <QCoreApplication>
 #include <QIcon>
 #include <QMessageBox>
+#include <QPointer>
 #include <QProgressDialog>
 #include <QtDebug>
 
@@ -40,7 +41,7 @@ struct UiController::Private {
   QIcon icon_;
   QString version_;
 
-  UpdateDialog* dialog_;
+  QPointer<UpdateDialog> dialog_;
   QProgressDialog* progress_dialog_;
 };
 
@@ -55,6 +56,7 @@ UiController::UiController(bool quiet, QObject* parent, QWidget* parent_widget)
 
 UiController::~UiController() {
   delete d->progress_dialog_;
+  delete d->dialog_;
 }
 
 void UiController::SetNetworkAccessManager(QNetworkAccessManager* network) {

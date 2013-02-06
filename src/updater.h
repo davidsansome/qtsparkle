@@ -77,10 +77,17 @@ public:
   // use QCoreApplication::applicationVersion()
   void SetVersion(const QString& version);
 
+  // Sets the update check interval in msec. Default value is one day (86400000).
+  // Minimum value is one hour (3600000)
+  void SetUpdateInterval(int msec);
+
 public slots:
   // Checks for updates now.  You probably want to call this from a menu item
   // in your application's main window.
   void CheckNow();
+
+private slots:
+  void AutoCheck();
 
 protected:
   bool event(QEvent* e);

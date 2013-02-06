@@ -28,8 +28,10 @@
 #include <QCoreApplication>
 #include <QIcon>
 #include <QMessageBox>
+#include <QPointer>
 #include <QPushButton>
 #include <QSettings>
+#include <QTimer>
 #include <QTranslator>
 #include <QUrl>
 #include <QtDebug>
@@ -67,7 +69,9 @@ struct Updater::Private {
       appcast_url_(appcast_url),
       check_automatically_(false),
       first_boot_(true),
-      asked_permission_(false)
+      asked_permission_(false),
+      update_check_timer_(NULL),
+      update_check_interval_msec_(86400000) // one day
   {
   }
 
@@ -88,6 +92,11 @@ struct Updater::Private {
 
   QEvent::Type ask_permission_event_;
   QEvent::Type auto_check_event_;
+
+  QTimer* update_check_timer_;
+  int update_check_interval_msec_;
+
+  QPointer<UiController> controller_;
 };
 
 
@@ -128,6 +137,10 @@ Updater::Updater(const QUrl& appcast_url, QWidget* parent)
     d->first_boot_ = false;
     s.setValue("first_boot", false);
   }
+
+  d->update_check_timer_ = new QTimer(this);
+  d->update_check_timer_->setSingleShot(true);
+  connect(d->update_check_timer_, SIGNAL(timeout()), SLOT(AutoCheck()));
 }
 
 Updater::~Updater() {
@@ -143,6 +156,13 @@ void Updater::SetNetworkAccessManager(QNetworkAccessManager* network) {
 
 void Updater::SetVersion(const QString& version) {
   d->version_ = version;
+}
+
+void Updater::SetUpdateInterval(int msec) {
+  if (msec < 3600000)
+    return;
+
+  d->update_check_interval_msec_ = msec;
 }
 
 bool Updater::event(QEvent* e) {
@@ -184,24 +204,33 @@ void Updater::CheckNow() {
   d->CheckNow(false);
 }
 
+void Updater::AutoCheck() {
+  d->CheckNow(true);
+}
+
 void Updater::Private::CheckNow(bool quiet) {
-  UiController* controller = new UiController(quiet, updater_, parent_widget_);
-  controller->SetNetworkAccessManager(network_);
-  controller->SetIcon(icon_);
-  controller->SetVersion(version_);
+  delete controller_;
+  controller_ = new UiController(quiet, updater_, parent_widget_);
+  controller_->SetNetworkAccessManager(network_);
+  controller_->SetIcon(icon_);
+  controller_->SetVersion(version_);
 
   UpdateChecker* checker = new UpdateChecker(updater_);
   checker->SetNetworkAccessManager(network_);
   checker->SetVersion(version_);
 
-  connect(checker, SIGNAL(CheckStarted()), controller, SLOT(CheckStarted()));
-  connect(checker, SIGNAL(CheckFailed(QString)), controller, SLOT(CheckFailed(QString)));
-  connect(checker, SIGNAL(UpdateAvailable(AppCastPtr)), controller, SLOT(UpdateAvailable(AppCastPtr)));
-  connect(checker, SIGNAL(UpToDate()), controller, SLOT(UpToDate()));
+  connect(checker, SIGNAL(CheckStarted()), controller_, SLOT(CheckStarted()));
+  connect(checker, SIGNAL(CheckFailed(QString)), controller_, SLOT(CheckFailed(QString)));
+  connect(checker, SIGNAL(UpdateAvailable(AppCastPtr)), controller_, SLOT(UpdateAvailable(AppCastPtr)));
+  connect(checker, SIGNAL(UpToDate()), controller_, SLOT(UpToDate()));
 
   checker->Check(appcast_url_, !quiet);
 
   // The UiController will delete itself when the check is finished.
+
+  if (check_automatically_) {
+    update_check_timer_->start(update_check_interval_msec_);
+  }
 }
 
 } // namespace qtsparkle
