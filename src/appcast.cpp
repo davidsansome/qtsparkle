@@ -33,6 +33,7 @@ struct AppCast::Private {
     QString version_;
     QString download_url_;
     QString release_notes_url_;
+    QString description_;
 
     bool operator <(const Item& other) const {
       return CompareVersions(version_, other.version_);
@@ -46,7 +47,8 @@ struct AppCast::Private {
     while (!reader->atEnd()) {
       reader->readNext();
 
-      if (reader->tokenType() == QXmlStreamReader::EndElement)
+      if (reader->tokenType() == QXmlStreamReader::EndElement
+          && reader->name() == "item")
         break;
 
       if (reader->tokenType() == QXmlStreamReader::StartElement) {
@@ -56,6 +58,9 @@ struct AppCast::Private {
         } else if (reader->name() == "enclosure") {
           ret.download_url_ = reader->attributes().value("url").toString();
           ret.version_ = reader->attributes().value(Private::kNamespace, "version").toString();
+        } else if (reader->name() == "description") {
+          reader->readNext();
+          ret.description_ = reader->text().toString();
         } else {
           reader->skipCurrentElement();
         }
@@ -84,6 +89,7 @@ AppCast::~AppCast() {
 QString AppCast::version() const { return d->latest_.version_; }
 QString AppCast::download_url() const { return d->latest_.download_url_; }
 QString AppCast::release_notes_url() const { return d->latest_.release_notes_url_; }
+QString AppCast::description() const { return d->latest_.description_; }
 QString AppCast::error_reason() const { return d->error_reason_; }
 
 bool AppCast::Load(QIODevice* dev) {
