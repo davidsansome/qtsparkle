@@ -41,6 +41,7 @@ public:
   QString version() const;
   QString download_url() const;
   QString release_notes_url() const;
+  QString description() const;
 
   QString error_reason() const;
 
