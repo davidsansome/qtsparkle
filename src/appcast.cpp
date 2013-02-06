@@ -47,7 +47,8 @@ struct AppCast::Private {
     while (!reader->atEnd()) {
       reader->readNext();
 
-      if (reader->tokenType() == QXmlStreamReader::EndElement)
+      if (reader->tokenType() == QXmlStreamReader::EndElement
+          && reader->name() == "item")
         break;
 
       if (reader->tokenType() == QXmlStreamReader::StartElement) {
