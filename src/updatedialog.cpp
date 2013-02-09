@@ -97,16 +97,15 @@ void UpdateDialog::ShowUpdate(AppCastPtr appcast) {
 
   show();
 
-  if (!appcast->description().isEmpty())
+  if (!appcast->description().isEmpty()) {
     d->ui_->release_notes->setHtml(appcast->description());
-  else
-  {
-  if (!d->network_)
-    d->network_ = new QNetworkAccessManager(this);
+  } else {
+    if (!d->network_)
+      d->network_ = new QNetworkAccessManager(this);
 
-  FollowRedirects* reply = new FollowRedirects(
-      d->network_->get(QNetworkRequest(appcast->release_notes_url())));
-  connect(reply, SIGNAL(Finished()), SLOT(ReleaseNotesReady()));
+    FollowRedirects* reply = new FollowRedirects(
+        d->network_->get(QNetworkRequest(appcast->release_notes_url())));
+    connect(reply, SIGNAL(Finished()), SLOT(ReleaseNotesReady()));
   }
 }
 
