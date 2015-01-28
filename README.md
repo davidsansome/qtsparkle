@@ -55,3 +55,5 @@ will check for updates as soon as your application returns to the event loop.
         connect(ui_->check_for_updates, SIGNAL(clicked()),
                 updater, SLOT(CheckNow());
     }
+
+For Qt5 you need to include #include <qtsparkle-qt5/Updater>.

@@ -1,10 +1,31 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.11)
+cmake_policy(SET CMP0020 NEW)
+cmake_policy(SET CMP0043 NEW)
 
 include(cmake/Translations.cmake)
 
-find_package(Qt4 REQUIRED QtCore QtGui QtNetwork QtXml)
-add_definitions(${QT_DEFINITIONS})
-include(${QT_USE_FILE})
+option(BUILD_WITH_QT4 "Build qtsparkle with Qt4" ON)
+if(BUILD_WITH_QT4)
+  find_package(Qt4 REQUIRED QtCore QtGui QtNetwork QtXml)
+  add_definitions(${QT_DEFINITIONS})
+  include(${QT_USE_FILE})
+
+  macro(qt_add_resources)
+    qt4_add_resources(${ARGN})
+  endmacro()
+
+  set(QT_SUFFIX "")
+else()
+  find_package(Qt5 REQUIRED COMPONENTS Core Network Xml Widgets)
+
+  macro(qt_add_resources)
+    qt5_add_resources(${ARGN})
+  endmacro()
+
+  set(QT_LIBRARIES Qt5::Core Qt5::Network Qt5::Widgets)
+  set(QT_SUFFIX "-qt5")
+endif()
+
 
 SET(CMAKE_C_FLAGS    "${CMAKE_C_FLAGS} -Wall")
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")

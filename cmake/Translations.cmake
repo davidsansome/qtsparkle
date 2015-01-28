@@ -47,5 +47,5 @@ macro(compile_translations outfiles ts_dir qrc_name qrc_dir)
   endforeach()
 
   file(APPEND ${qrc_filepath} "</qresource></RCC>")
-  qt4_add_resources(${outfiles} ${qrc_filepath})
+  qt_add_resources(${outfiles} ${qrc_filepath})
 endmacro()
