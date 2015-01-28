@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 function(add_public_header oldname newname)
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/${oldname}"
