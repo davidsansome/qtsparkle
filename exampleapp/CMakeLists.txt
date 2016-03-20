@@ -9,7 +9,16 @@ add_executable(exampleapp
   ${SOURCES}
 )
 
+if(BUILD_STATIC AND WIN32)
+  set(LIBS
+    -lssl
+    -lcrypto
+    -lws2_32
+  )
+endif()
+
 target_link_libraries(exampleapp
-  ${QT_LIBRARIES}
   qtsparkle
+  ${QT_LIBRARIES}
+  ${LIBS}
 )

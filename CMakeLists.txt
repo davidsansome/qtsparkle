@@ -5,6 +5,7 @@ cmake_policy(SET CMP0043 NEW)
 include(cmake/Translations.cmake)
 
 option(BUILD_WITH_QT4 "Build qtsparkle with Qt4" ON)
+option(BUILD_STATIC "Static build" OFF)
 if(BUILD_WITH_QT4)
   find_package(Qt4 REQUIRED QtCore QtGui QtNetwork QtXml)
   add_definitions(${QT_DEFINITIONS})
