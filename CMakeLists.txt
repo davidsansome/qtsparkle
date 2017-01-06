@@ -17,7 +17,9 @@ if(BUILD_WITH_QT4)
 
   set(QT_SUFFIX "")
 else()
-  find_package(Qt5 REQUIRED COMPONENTS Core Network Xml Widgets)
+  find_package(Qt5 REQUIRED COMPONENTS Core Network Xml Widgets LinguistTools)
+  set(QT_LUPDATE_EXECUTABLE ${Qt5_LUPDATE_EXECUTABLE})
+  set(QT_LRELEASE_EXECUTABLE ${Qt5_LRELEASE_EXECUTABLE})
 
   macro(qt_add_resources)
     qt5_add_resources(${ARGN})
