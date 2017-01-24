@@ -1,10 +1,10 @@
 function(add_public_header oldname newname)
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/${oldname}"
-    "${CMAKE_BINARY_DIR}/include/qtsparkle${QT_SUFFIX}/${newname}"
+    "${CMAKE_BINARY_DIR}/include/qtsparkle${QTSPARKLE_LIB_VERSION_SUFFIX}/${newname}"
     COPY_ONLY)
-  install(FILES "${CMAKE_BINARY_DIR}/include/qtsparkle${QT_SUFFIX}/${newname}"
-          DESTINATION include/qtsparkle${QT_SUFFIX})
+  install(FILES "${CMAKE_BINARY_DIR}/include/qtsparkle${QTSPARKLE_LIB_VERSION_SUFFIX}/${newname}"
+          DESTINATION include/qtsparkle${QTSPARKLE_LIB_VERSION_SUFFIX})
 endfunction(add_public_header)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -76,7 +76,7 @@ set_target_properties(qtsparkle
   PROPERTIES
     AUTOMOC ON
     AUTOUIC ON
-    OUTPUT_NAME qtsparkle${QT_SUFFIX}
+    OUTPUT_NAME qtsparkle${QTSPARKLE_LIB_VERSION_SUFFIX}
 )
 
 target_link_libraries(qtsparkle

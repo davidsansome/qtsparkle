@@ -14,8 +14,6 @@ if(BUILD_WITH_QT4)
   macro(qt_add_resources)
     qt4_add_resources(${ARGN})
   endmacro()
-
-  set(QT_SUFFIX "")
 else()
   find_package(Qt5 REQUIRED COMPONENTS Core Network Xml Widgets LinguistTools)
   set(QT_LUPDATE_EXECUTABLE ${Qt5_LUPDATE_EXECUTABLE})
@@ -26,7 +24,7 @@ else()
   endmacro()
 
   set(QT_LIBRARIES Qt5::Core Qt5::Network Qt5::Widgets)
-  set(QT_SUFFIX "-qt5")
+  set(QTSPARKLE_LIB_VERSION_SUFFIX 5)
 endif()
 
 
