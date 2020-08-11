@@ -35,6 +35,7 @@
 #include <QTranslator>
 #include <QUrl>
 #include <QtDebug>
+#include <QLocale>
 
 
 inline static void InitTranslationsResource() {
