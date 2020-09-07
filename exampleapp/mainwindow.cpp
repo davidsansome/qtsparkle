@@ -24,8 +24,10 @@
 
 #if QT_VERSION < QT_VERSION_CHECK( 5, 0, 0 )
 #include <qtsparkle/Updater>
-#else
+#elif QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
 #include <qtsparkle-qt5/Updater>
+#else
+#include <qtsparkle-qt6/Updater>
 #endif
 
 #include <QPushButton>

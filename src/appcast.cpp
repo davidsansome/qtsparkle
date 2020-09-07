@@ -48,17 +48,17 @@ struct AppCast::Private {
       reader->readNext();
 
       if (reader->tokenType() == QXmlStreamReader::EndElement
-          && reader->name() == "item")
+          && reader->name().toString() == "item")
         break;
 
       if (reader->tokenType() == QXmlStreamReader::StartElement) {
-        if (reader->name() == "releaseNotesLink" &&
-            reader->namespaceUri() == Private::kNamespace) {
+        if (reader->name().toString() == "releaseNotesLink" &&
+            reader->namespaceUri().toString() == Private::kNamespace) {
           ret.release_notes_url_ = reader->readElementText().trimmed();
-        } else if (reader->name() == "enclosure") {
+        } else if (reader->name().toString() == "enclosure") {
           ret.download_url_ = reader->attributes().value("url").toString();
           ret.version_ = reader->attributes().value(Private::kNamespace, "version").toString();
-        } else if (reader->name() == "description") {
+        } else if (reader->name().toString() == "description") {
           reader->readNext();
           ret.description_ = reader->text().toString();
         } else {
@@ -100,7 +100,7 @@ bool AppCast::Load(QIODevice* dev) {
     reader.readNext();
 
     if (reader.tokenType() == QXmlStreamReader::StartElement &&
-        reader.name() == "item") {
+        reader.name().toString() == "item") {
       Private::Item item = d->LoadItem(&reader);
       if (d->latest_ < item)
         d->latest_ = item;

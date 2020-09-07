@@ -2,7 +2,7 @@ function(add_public_header oldname newname)
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/${oldname}"
     "${CMAKE_BINARY_DIR}/include/qtsparkle${QT_SUFFIX}/${newname}"
-    COPY_ONLY)
+    COPYONLY)
   install(FILES "${CMAKE_BINARY_DIR}/include/qtsparkle${QT_SUFFIX}/${newname}"
           DESTINATION include/qtsparkle${QT_SUFFIX})
 endfunction(add_public_header)
