@@ -44,7 +44,7 @@ public:
   void SetIcon(const QIcon& icon);
   void SetVersion(const QString& version);
 
-public slots:
+public Q_SLOTS:
   void CheckStarted();
   void UpdateAvailable(AppCastPtr appcast);
   void UpToDate();

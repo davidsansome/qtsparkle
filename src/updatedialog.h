@@ -44,10 +44,10 @@ public:
   void SetIcon(const QIcon& icon);
   void SetVersion(const QString& version);
 
-public slots:
+public Q_SLOTS:
   void ShowUpdate(AppCastPtr appcast);
 
-private slots:
+private Q_SLOTS:
   void ReleaseNotesReady();
   void Install();
   void Skip();
