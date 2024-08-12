@@ -81,12 +81,12 @@ public:
   // Minimum value is one hour (3600000)
   void SetUpdateInterval(int msec);
 
-public slots:
+public Q_SLOTS:
   // Checks for updates now.  You probably want to call this from a menu item
   // in your application's main window.
   void CheckNow();
 
-private slots:
+private Q_SLOTS:
   void AutoCheck();
 
 protected:

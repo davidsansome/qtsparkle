@@ -43,13 +43,13 @@ public:
   void SetVersion(const QString& version);
   void Check(const QUrl& appcast_url, bool override_user_skip);
 
-signals:
+Q_SIGNALS:
   void CheckStarted();
   void UpdateAvailable(AppCastPtr appcast);
   void UpToDate();
   void CheckFailed(const QString& reason);
 
-private slots:
+private Q_SLOTS:
   void Finished();
   void RedirectLimitReached();
 

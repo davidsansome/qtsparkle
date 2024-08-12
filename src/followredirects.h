@@ -38,11 +38,11 @@ public:
 
   QNetworkReply* reply() const;
 
-signals:
+Q_SIGNALS:
   void Finished();
   void RedirectLimitReached();
 
-private slots:
+private Q_SLOTS:
   void FinishedSlot();
 
 private:
