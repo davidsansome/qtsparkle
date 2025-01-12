@@ -1,10 +1,10 @@
 function(add_public_header oldname newname)
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/${oldname}"
-    "${CMAKE_BINARY_DIR}/include/qtsparkle${QT_SUFFIX}/${newname}"
+    "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}${QT_SUFFIX}/${newname}"
     COPYONLY)
-  install(FILES "${CMAKE_BINARY_DIR}/include/qtsparkle${QT_SUFFIX}/${newname}"
-          DESTINATION include/qtsparkle${QT_SUFFIX})
+  install(FILES "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}${QT_SUFFIX}/${newname}"
+          DESTINATION include/${PROJECT_NAME}${QT_SUFFIX})
 endfunction(add_public_header)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -67,25 +67,31 @@ compile_translations(SOURCES
   "zh_TW"
 )
 
-add_library(qtsparkle
+add_library(${PROJECT_NAME}
   ${SOURCES}
   ${TRANSLATION_TEMPLATE}
 )
 
-set_target_properties(qtsparkle
-  PROPERTIES
-    AUTOMOC ON
-    AUTOUIC ON
-    OUTPUT_NAME qtsparkle${QT_SUFFIX}
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  CMAKE_CXX_STANDARD 17
+  CMAKE_CXX_STANDARD_REQUIRED ON
+  AUTOMOC ON
+  AUTOUIC ON
+  OUTPUT_NAME ${PROJECT_NAME}${QT_SUFFIX}
+  PUBLIC_HEADER Updater
 )
 
-target_link_libraries(qtsparkle
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+if(BUILD_SHARED_LIBS)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE QTSPARKLE_BUILD) # dllexport
+else()
+  target_compile_definitions(${PROJECT_NAME} PUBLIC QTSPARKLE_STATIC) # suppress dllimport
+endif()
+
+target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
 )
-
-install(TARGETS qtsparkle
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION bin
-  RUNTIME DESTINATION bin
-)
-

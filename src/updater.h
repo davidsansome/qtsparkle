@@ -30,6 +30,16 @@ class QIcon;
 class QNetworkAccessManager;
 class QUrl;
 
+#ifdef QTSPARKLE_STATIC
+#  define QTSPARKLE_EXPORT
+#else
+#  ifdef QTSPARKLE_BUILD
+#    define QTSPARKLE_EXPORT Q_DECL_EXPORT
+#  else
+#    define QTSPARKLE_EXPORT Q_DECL_IMPORT
+#  endif
+#endif
+
 namespace qtsparkle {
 
 // Loads qtsparkle's translations from the .ts files compiled into the library,
@@ -37,7 +47,7 @@ namespace qtsparkle {
 // function if you want to use a non-default language for qtsparkle.  If you
 // do not call this function, it will be called with the default language
 // (QLocale::system().name()) the first time qtsparkle::Updater is created.
-void LoadTranslations(const QString& language);
+QTSPARKLE_EXPORT void LoadTranslations(const QString& language);
 
 
 // The Updater is the main class in qtsparkle that you should use in your
@@ -49,7 +59,7 @@ void LoadTranslations(const QString& language);
 // permission, it will check for updates automatically on startup.
 // Checking for updates and displaying dialogs is done after the application
 // returns to the event loop, not in the constructor.
-class Updater : public QObject {
+class QTSPARKLE_EXPORT Updater : public QObject {
   Q_OBJECT
 
 public:
